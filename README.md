@@ -8,6 +8,7 @@ A command-line Hangman game where players guess the name of a U.S. state before 
 - Input validation for player guesses
 - Case-insensitive letter handling
 - Clean CLI display of game state
+- Menu interface with input validation
 
 ## How To Run
 
@@ -36,7 +37,6 @@ After compiling, run the program with:
 
 ## Future Improvements
 
-* Add a menu system to allow multiple games per session
 * Implement difficulty settings (word pool size + allowed mistakes)
 * Add persistent player statistics (wins, losses, total guesses)
 * (Optional) Allow users to create and store a custom word bank
