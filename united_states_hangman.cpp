@@ -148,14 +148,11 @@ bool checkPuzzleStatus(const vector<char>& puzzle) {
     return true;
 }
 
-// Main Function
-int main() {
-    string current_state = selectRandomState(usa_states);
-    vector<char> puzzle = createPuzzle(current_state);
+bool gameLoop(string current_state, vector<char> puzzle) {
+    bool solved = false;
+    char current_guess;
     vector<int> correct_locations;
     vector<char> guessed_letters;
-    char current_guess;
-    bool solved = false;
     int mistakes = 0;
     int turns = 1;
 
@@ -177,10 +174,7 @@ int main() {
             cout << "Sorry, " << current_guess << " is not in this state's name." << endl;
             ++mistakes;
             if (mistakes == hangman.size() - 1) {
-                cout << hangman.at(mistakes);
-                cout << "Sorry, you're out of attempts, and poor old Stickman has kicked the bucket!" << endl;
-                cout << "The correct answer was " << current_state << "." << endl;
-                return 0;
+                return false;
             }
         }
 
@@ -194,6 +188,24 @@ int main() {
         solved = checkPuzzleStatus(puzzle);
     }
 
-    cout << endl << "Great job! You guessed the right state!" << endl;
+    return true;
+}
+
+// Main Function
+int main() {
+    string current_state = selectRandomState(usa_states);
+    vector<char> puzzle = createPuzzle(current_state);
+    bool game_status;
+
+    game_status = gameLoop(current_state, puzzle);
+
+    if (game_status) {
+        cout << endl << "Great job! You guessed the right state!" << endl;
+    } else {
+        cout << hangman.at(hangman.size() - 1);
+        cout << "Sorry, you're out of attempts, and poor old Stickman has kicked the bucket!" << endl;
+        cout << "The correct answer was " << current_state << "." << endl;
+    }
+
     return 0;
 };
