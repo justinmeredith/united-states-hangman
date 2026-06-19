@@ -191,21 +191,68 @@ bool gameLoop(string current_state, vector<char> puzzle) {
     return true;
 }
 
-// Main Function
-int main() {
-    string current_state = selectRandomState(usa_states);
-    vector<char> puzzle = createPuzzle(current_state);
-    bool game_status;
+int getValidInput(const int& menu_size) {
+    bool valid_input = false;
+    string user_input;
+    string error_message = "\n    It looks like that wasn't a valid menu selection.\n    Please only enter a single digit to select a menu option.\n";
 
-    game_status = gameLoop(current_state, puzzle);
+    while (!valid_input) {
+        cout << endl << "||| Your selection: ";
+        cin >> user_input;
 
-    if (game_status) {
-        cout << endl << "Great job! You guessed the right state!" << endl;
-    } else {
-        cout << hangman.at(hangman.size() - 1);
-        cout << "Sorry, you're out of attempts, and poor old Stickman has kicked the bucket!" << endl;
-        cout << "The correct answer was " << current_state << "." << endl;
+        if (user_input.size() != 1) {
+            cout << error_message;
+        } else if (!isdigit(user_input.at(0))) {
+            cout << error_message;
+        } else if (user_input.at(0) - '0' < 0 || user_input.at(0) - '0' > menu_size) {
+            cout << error_message;
+        } else {
+            valid_input = true;
+        }
+
+        cin.clear();
+        cin.ignore();
     }
 
-    return 0;
+    return user_input.at(0) - '0';
+}
+
+// Main Function
+int main() {
+    string current_state;
+    vector<char> puzzle;
+    bool game_status;
+    int menu_selection;
+    const int menu_size = 1;
+
+    cout << "| United States Hangman" << endl;
+    cout << "|| a game by J. Meredith" << endl << endl;
+    cout << " - - - - - - - - - - - - - - - - - - -" << endl;
+
+    while (true) {
+        cout << "| Main Menu" << endl;
+        cout << "|| 1. Play a game of hangman" << endl;
+        cout << "|| 0. Exit" << endl;
+
+        menu_selection = getValidInput(menu_size);
+
+        if (menu_selection == 0) {
+            cout << endl << "| Thanks for playing!" << endl;
+            cout << endl << "Exiting program..." << endl;
+            return 0;
+        } else if (menu_selection == 1) {
+            current_state = selectRandomState(usa_states);
+            puzzle = createPuzzle(current_state);
+            game_status = gameLoop(current_state, puzzle);
+
+            if (game_status) {
+                cout << endl << endl << "~ ~ ~ Great job! You guessed the right state! ~ ~ ~" << endl << endl << endl;
+            } else {
+                cout << hangman.at(hangman.size() - 1);
+                cout << "Sorry, you're out of attempts, and poor old Stickman has kicked the bucket!" << endl;
+                cout << "The correct answer was " << current_state << "." << endl;
+            }
+        }
+    }
+
 };
