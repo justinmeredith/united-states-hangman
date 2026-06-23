@@ -26,6 +26,14 @@ vector<string> hangman = {
     "  __\n |  |\n |  O\n | /|\\\n | / \\\n_|_\n"
 };
 
+vector<string> hangman_hard = {
+    "  __\n |  |\n |\n |\n |\n_|_\n",
+    "  __\n |  |\n |  O\n |\n |\n_|_\n",
+    "  __\n |  |\n |  O\n |  |\n |\n_|_\n",
+    "  __\n |  |\n |  O\n | /|\\\n |\n_|_\n",
+    "  __\n |  |\n |  O\n | /|\\\n | / \\\n_|_\n"
+};
+
 // Functions
 
 // Returns a random state
@@ -150,7 +158,7 @@ bool checkPuzzleStatus(const vector<char>& puzzle) {
     return true;
 }
 
-bool gameLoop(string current_state, vector<char> puzzle) {
+bool gameLoop(string current_state, vector<char> puzzle, vector<string> current_hangman) {
     bool solved = false;
     char current_guess;
     vector<int> correct_locations;
@@ -159,7 +167,7 @@ bool gameLoop(string current_state, vector<char> puzzle) {
     int turns = 1;
 
     cout << "Turn #" << turns << endl;
-    cout << hangman.at(mistakes);
+    cout << current_hangman.at(mistakes);
     displayPuzzle(puzzle);
     cout << endl;
 
@@ -175,7 +183,7 @@ bool gameLoop(string current_state, vector<char> puzzle) {
         } else {
             cout << "Sorry, " << current_guess << " is not in this state's name." << endl;
             ++mistakes;
-            if (mistakes == hangman.size() - 1) {
+            if (mistakes == current_hangman.size() - 1) {
                 return false;
             }
         }
@@ -185,7 +193,7 @@ bool gameLoop(string current_state, vector<char> puzzle) {
         cout << "Turn #" << turns << endl;
         cout << endl << "So far you've guessed ";
         displayGuessedLetters(guessed_letters);
-        cout << hangman.at(mistakes) << endl;
+        cout << current_hangman.at(mistakes) << endl;
         displayPuzzle(puzzle);
         solved = checkPuzzleStatus(puzzle);
     }
@@ -223,9 +231,14 @@ int getValidInput(const int& menu_size) {
 int main() {
     string current_state;
     vector<char> puzzle;
+    vector<string> current_hangman;
     bool game_status;
     int menu_selection;
+    int difficulty_selection = 1;
     const int menu_size = 1;
+
+    vector<string> increased_difficulty = usa_states;
+    increased_difficulty.insert(increased_difficulty.end(), usa_capitals.begin(), usa_capitals.end());
 
     cout << "| United States Hangman" << endl;
     cout << "|| a game by J. Meredith" << endl << endl;
@@ -234,7 +247,7 @@ int main() {
     while (true) {
         cout << "| Main Menu" << endl;
         cout << "|| 1. Play a game of hangman" << endl;
-        cout << "|| 0. Exit" << endl;
+        cout << "|| 0. Exit" << endl << endl;
 
         menu_selection = getValidInput(menu_size);
 
@@ -243,14 +256,36 @@ int main() {
             cout << endl << "Exiting program..." << endl;
             return 0;
         } else if (menu_selection == 1) {
-            current_state = selectRandomState(usa_states);
-            puzzle = createPuzzle(current_state);
-            game_status = gameLoop(current_state, puzzle);
+            cout << endl << "|| Choose A Difficulty: " << endl << endl;
+            cout << "||| 1. Easy:     Only includes the 50 United States" << endl;
+            cout << "||| 2. Medium:   Includes the 50 United States and each of their capital cities" << endl;
+            cout << "||| 3. Hard:     Includes the 50 United States, each of their capital cities, and reduces your mistakes from 6 to 4" << endl;
+            cout << "||| 0. Return to main menu" << endl << endl;
+            difficulty_selection = getValidInput(3);
+
+            if (difficulty_selection == 0) {
+                continue;
+            } else if (difficulty_selection == 1) {
+                current_hangman = hangman;
+                current_state = selectRandomState(usa_states);
+                puzzle = createPuzzle(current_state);
+                game_status = gameLoop(current_state, puzzle, current_hangman);
+            } else if (difficulty_selection == 2) {
+                current_hangman = hangman;
+                current_state = selectRandomState(increased_difficulty);
+                puzzle = createPuzzle(current_state);
+                game_status = gameLoop(current_state, puzzle, current_hangman);
+            } else if (difficulty_selection == 3) {
+                current_hangman = hangman_hard;
+                current_state = selectRandomState(increased_difficulty);
+                puzzle = createPuzzle(current_state);
+                game_status = gameLoop(current_state, puzzle, current_hangman);
+            }
 
             if (game_status) {
                 cout << endl << endl << "~ ~ ~ Great job! You guessed the right state! ~ ~ ~" << endl << endl << endl;
             } else {
-                cout << hangman.at(hangman.size() - 1);
+                cout << current_hangman.at(current_hangman.size() - 1);
                 cout << "Sorry, you're out of attempts, and poor old Stickman has kicked the bucket!" << endl;
                 cout << "The correct answer was " << current_state << "." << endl;
             }
